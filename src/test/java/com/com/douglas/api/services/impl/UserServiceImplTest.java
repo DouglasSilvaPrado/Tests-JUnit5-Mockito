@@ -3,6 +3,7 @@ package com.com.douglas.api.services.impl;
 import com.com.douglas.api.domain.User;
 import com.com.douglas.api.domain.dto.UserDTO;
 import com.com.douglas.api.repositories.UserRepository;
+import com.com.douglas.api.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ class UserServiceImplTest {
     public static final String NAME = "Douglas";
     public static final String EMAIL = "douglas@gmail.com";
     public static final String PASSWORD = "123";
+    public static final String OBJETO_NAO_ENCONTRADO = "Objeto não encontrado!";
 
     @InjectMocks
     private UserServiceImpl service;
@@ -60,6 +62,18 @@ class UserServiceImplTest {
         assertEquals(ID, response.getId());
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
+    }
+
+    @Test
+    void whenFindByIdThenReturnAnObjectNotFoundException(){
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
+
+        try {
+            service.findById(ID);
+        }catch (Exception ex){
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());
+        }
     }
 
     @Test
